@@ -11,6 +11,14 @@ const Search = () => {
     const [page,setPage] = useState(1)
     const [totalPage,setTotalPage] = useState(0)
 
+    // Used for remove double item in response
+    const removeDoubleMovie = arr =>{
+        return arr.reduce( (acc,current)=>{
+            return acc.includes(current) ? acc 
+            : [...acc,current]
+        },[])
+    }
+
    
   
     // Used for triggers the API call when search button is pressed
@@ -59,15 +67,17 @@ const Search = () => {
             .then( response => response.json())
             .then( data=>{
                 const newResult = [...movie,...data.results]
-                setMovie(newResult)
+                // Used for remove double item newResult
+                setMovie(removeDoubleMovie(newResult))
             })
             .catch(error=>{
                 console.log(error)
             })
         }
     },[page])
+    console.log(movie)
 
-    // Used for reset states values before new call
+    // Used for reset states values before new research
     useEffect(()=>{
         if( input.length === 0 && totalPage!== 0){
              setPage(1)
@@ -75,6 +85,7 @@ const Search = () => {
             setMovie([])
         }
     },[input])
+ 
     
     
     return (
@@ -90,7 +101,7 @@ const Search = () => {
                 </View>
                     : <FlatList
                         data={movie}
-                        keyExtractor={(item) => (item.id+item.title).toString()}
+                        keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }) => <FilmItem movie={item} />}
                        onEndReachedThreshold={4}
                        onEndReached={loadMoreMovie}
