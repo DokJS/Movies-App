@@ -16,14 +16,13 @@ const Search = () => {
         
         if (input.length > 0) {
             setIsDataLoading(true)
-            const requestUrl = createUrl(input,currentPage)
+            const requestUrl = createUrl(input,currentPage = 1)
             try {
                 const response = await fetch(requestUrl)
                 const data = await response.json()
                 setIsDataLoading(false)
                 // Used for store Data into state
                 setMovie(data.results)
-                setTotalPage(data.total_pages)
             } catch (error) {
                 console.log(error)
             }
