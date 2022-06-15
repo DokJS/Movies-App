@@ -11,9 +11,8 @@ const Search = () => {
 
     
   
-
+    // Used for triggers the API call when search button is pressed
     const searchMovie = async () => {
-        
         if (input.length > 0) {
             setIsDataLoading(true)
             const requestUrl = createUrl(input,currentPage = 1)
@@ -29,7 +28,8 @@ const Search = () => {
         }
     }
 
-    
+
+    // Used for triggers the API call when Enter key is pressed
     const handleSubmit = async ({ nativeEvent }) => {
         if (nativeEvent.text !== "") {
             try {
