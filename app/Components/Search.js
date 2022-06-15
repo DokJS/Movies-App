@@ -11,7 +11,7 @@ const Search = () => {
     const [page,setPage] = useState(1)
     const [totalPage,setTotalPage] = useState(0)
 
-    
+   
   
     // Used for triggers the API call when search button is pressed
     const searchMovie = async () => {
@@ -33,7 +33,7 @@ const Search = () => {
         }
     }
 
-   
+
 
     // Used for triggers the API call when Enter key is pressed
     const handleSubmit = async ({ nativeEvent }) => {
@@ -47,9 +47,11 @@ const Search = () => {
     }
 
     const loadMoreMovie = ()=>{
-        setPage( (page) => page + 1)
+        if(page < totalPage){
+            setPage( (page) => page + 1)
+        }
     }
-
+    // Used for load other movies when scroll limit is reached
     useEffect(()=>{
         if(page > 1){
             const newRequestUrl = createUrl(input,page)
@@ -64,6 +66,15 @@ const Search = () => {
             })
         }
     },[page])
+
+    // Used for reset states values before new call
+    useEffect(()=>{
+        if( input.length === 0 && totalPage!== 0){
+             setPage(1)
+            setTotalPage(0)
+            setMovie([])
+        }
+    },[input])
     
     
     return (
