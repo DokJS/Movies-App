@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import { View, TextInput, Button, StyleSheet, FlatList, ActivityIndicator} from 'react-native';
 import FilmItem from './FilmItems';
 import { createUrl } from '../Api/TMDBapi';
@@ -8,6 +8,8 @@ const Search = () => {
     const [movie, setMovie] = useState([])
     const [input, setInput] = useState('')
     const [isDataLoading, setIsDataLoading] = useState(false)
+    const [page,setPage] = useState(1)
+    const [totalPage,setTotalPage] = useState(0)
 
     
   
@@ -15,19 +17,23 @@ const Search = () => {
     const searchMovie = async () => {
         if (input.length > 0) {
             setIsDataLoading(true)
-            const requestUrl = createUrl(input,currentPage = 1)
+            const requestUrl = createUrl(input,page)
             try {
                 const response = await fetch(requestUrl)
                 const data = await response.json()
                 setIsDataLoading(false)
                 // Used for store Data into state
                 setMovie(data.results)
+                // and assign values to page & totalPage
+                setPage(data.page)
+                setTotalPage(data.total_pages)
             } catch (error) {
                 console.log(error)
             }
         }
     }
 
+   
 
     // Used for triggers the API call when Enter key is pressed
     const handleSubmit = async ({ nativeEvent }) => {
@@ -40,6 +46,24 @@ const Search = () => {
         }
     }
 
+    const loadMoreMovie = ()=>{
+        setPage( (page) => page + 1)
+    }
+
+    useEffect(()=>{
+        if(page > 1){
+            const newRequestUrl = createUrl(input,page)
+            fetch(newRequestUrl)
+            .then( response => response.json())
+            .then( data=>{
+                const newResult = [...movie,...data.results]
+                setMovie(newResult)
+            })
+            .catch(error=>{
+                console.log(error)
+            })
+        }
+    },[page])
     
     
     return (
@@ -57,8 +81,8 @@ const Search = () => {
                         data={movie}
                         keyExtractor={(item) => (item.id+item.title).toString()}
                         renderItem={({ item }) => <FilmItem movie={item} />}
-                        onEndReachedThreshold={2}
-                        onEndReached={()=>{}}
+                       onEndReachedThreshold={4}
+                       onEndReached={loadMoreMovie}
                     />
             }
         </View>
