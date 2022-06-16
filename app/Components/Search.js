@@ -56,7 +56,7 @@ const Search = () => {
 
     const loadMoreMovie = ()=>{
         if(page < totalPage){
-            setPage( (page) => page + 1)
+            setPage( page => page + 1)
         }
     }
     // Used for load other movies when scroll limit is reached
@@ -75,16 +75,18 @@ const Search = () => {
             })
         }
     },[page])
-    console.log(movie)
+   
 
     // Used for reset states values before new research
     useEffect(()=>{
-        if( input.length === 0 && totalPage!== 0){
+        if( input.length === 0){
              setPage(1)
             setTotalPage(0)
             setMovie([])
         }
-    },[input])
+    }, [input])
+    console.log(movie,totalPage,page)
+   
  
     
     
@@ -101,7 +103,7 @@ const Search = () => {
                 </View>
                     : <FlatList
                         data={movie}
-                        keyExtractor={(item) => item.id.toString()}
+                        keyExtractor={(item,index) => (item+index).toString()}
                         renderItem={({ item }) => <FilmItem movie={item} />}
                        onEndReachedThreshold={4}
                        onEndReached={loadMoreMovie}
